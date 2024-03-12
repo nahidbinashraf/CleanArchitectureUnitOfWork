@@ -159,8 +159,9 @@ namespace UnitOfWork.Services.Services
                 if (employee != null)
                 {
                     employee.FirstName = employeeDetails.FirstName;
+                    employee.LastName = employeeDetails.LastName;
 
-                    _unitOfWork.EmployeeRespository.Update(employee);
+                    _unitOfWork.EmployeeRespository.Update(employee, x=> x.FirstName, x=> x.LastName);
 
                     var result = _unitOfWork.Save();
 

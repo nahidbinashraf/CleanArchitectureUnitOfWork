@@ -11,7 +11,7 @@
 
         void Rollback();
 
-        int Save();
+        int Save(bool includeAuditLog = true);
 
         string GetDatabaseProvider();
     }

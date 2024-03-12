@@ -42,7 +42,7 @@ namespace UnitOfWork.Infrastructure.Repositories
         }
 
 
-        public int Save()
+        public int Save(bool includeAuditLog = true)
         {
             return _dbContext.SaveChanges();
         }
