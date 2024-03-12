@@ -18,14 +18,45 @@ namespace UnitOfWork.Services.Services
         {
             if (employee != null)
             {
-                await _unitOfWork.EmployeeRespository.AddAsync(employee);
+                try
+                {
+                    var dep = new Department
+                    {
+                        Name = employee.Department.Name
+                    };
+                    _unitOfWork.CreateTransaction();
+                    await _unitOfWork.DepartmentRespository.AddAsync(dep);
+                    _unitOfWork.Save();
 
-                var result = _unitOfWork.Save();
+                    var emp = new Employee
+                    {
+                        FirstName = employee.FirstName,
+                        LastName = employee.LastName,
+                        Age = employee.Age,
+                        Email = employee.Email,
+                        DepartmentId = dep.Id,
+                        DesignationId = 3
+                       
+                    };
+                    await _unitOfWork.EmployeeRespository.AddAsync(emp);
 
-                if (result > 0)
-                    return true;
-                else
-                    return false;
+                    var result = _unitOfWork.Save();
+
+                    if (result > 0)
+                    {
+                        _unitOfWork.Commit();
+                        return true;
+                    }
+                    else
+                    {
+                        _unitOfWork.Rollback();
+                        return false;
+                    }
+                }
+                catch (Exception)
+                {
+                    _unitOfWork.Rollback();
+                }
             }
             return false;
         }
@@ -51,6 +82,8 @@ namespace UnitOfWork.Services.Services
 
         public async Task<IEnumerable<EmployeeListResponse>> GetAllEmployees()
         {
+            var x = _unitOfWork.GetDatabaseProvider();
+            var count = _unitOfWork.EmployeeRespository.Count();
             var employeeDetailsList = _unitOfWork.EmployeeRespository.GetAll(query =>
                     query.Select(e=> new Employee
                     {

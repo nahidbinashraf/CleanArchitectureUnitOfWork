@@ -4,5 +4,6 @@ namespace UnitOfWork.Core.Interfaces
 {
     public interface IEmployeeRespository : IGenericRepository<Employee>
     {
+        public int Count();
     }
 }

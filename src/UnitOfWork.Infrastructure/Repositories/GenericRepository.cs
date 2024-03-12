@@ -89,9 +89,32 @@ namespace UnitOfWork.Infrastructure.Repositories
             return query;
         }
 
-        public async Task<IList<object>> RawSqlQueryAsync(string sqlQuery, params object[] parameters)
+        public async Task<IList<TModel>> RawSqlQueryAsync<TModel>(string sqlQuery, params object[] parameters)
         {
-            return null;
+            using var command = _context.Database.GetDbConnection().CreateCommand();
+            command.CommandText = sqlQuery;
+
+            if (parameters != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    var dbParameter = command.CreateParameter();
+                    dbParameter.Value = parameter;
+                    command.Parameters.Add(dbParameter);
+                }
+            }
+
+            _context.Database.OpenConnection();
+
+            try
+            {
+                using var result = await command.ExecuteReaderAsync();
+                return MapResult<TModel>(result);
+            }
+            finally
+            {
+                _context.Database.CloseConnection();
+            }
         }
 
         public IList<TModel> RawSqlQuery<TModel>(string sqlQuery, params object[] parameters)

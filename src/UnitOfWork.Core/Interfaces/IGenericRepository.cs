@@ -15,10 +15,10 @@ namespace UnitOfWork.Core.Interfaces
         Task<IList<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>>? func = null, bool trackChanges = false);
 
         IList<TEntity> GetAll(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null, bool trackChanges = false);
-
+     
         IQueryable<TEntity> FindAll(bool trackChanges = false);
 
-        Task<IList<object>> RawSqlQueryAsync(string sqlQuery, params object[] parameters);
+        Task<IList<TModel>> RawSqlQueryAsync<TModel>(string sqlQuery, params object[] parameters);
 
         IList<TModel> RawSqlQuery<TModel>(string sqlQuery, params object[] parameters);
 

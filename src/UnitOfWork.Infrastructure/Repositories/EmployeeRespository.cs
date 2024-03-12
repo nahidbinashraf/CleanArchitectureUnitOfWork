@@ -10,5 +10,10 @@ namespace UnitOfWork.Infrastructure.Repositories
         {
 
         }
+
+        public int Count()
+        {
+            return _context.Employees.Count();
+        }
     }
 }
