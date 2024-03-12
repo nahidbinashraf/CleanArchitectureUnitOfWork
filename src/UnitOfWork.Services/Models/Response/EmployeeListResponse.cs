@@ -1,4 +1,6 @@
-﻿namespace UnitOfWork.Services.Models.Response
+﻿using UnitOfWork.Core.Models;
+
+namespace UnitOfWork.Services.Models.Response
 {
     public class EmployeeListResponse
     {

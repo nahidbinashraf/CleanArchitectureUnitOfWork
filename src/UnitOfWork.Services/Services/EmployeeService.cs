@@ -1,4 +1,6 @@
-﻿using UnitOfWork.Core.Interfaces;
+﻿using UnitOfWork.Core.Extension;
+using UnitOfWork.Core.Interfaces;
+using UnitOfWork.Core.Models;
 using UnitOfWork.Core.Models.Entities;
 using UnitOfWork.Services.Interfaces;
 using UnitOfWork.Services.Models.Response;
@@ -80,22 +82,24 @@ namespace UnitOfWork.Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<EmployeeListResponse>> GetAllEmployees()
+        public async Task<DataTableResponse<EmployeeListResponse>> GetAllEmployees()
         {
-            var x = _unitOfWork.GetDatabaseProvider();
-            var count = _unitOfWork.EmployeeRespository.Count();
-            var employeeDetailsList = _unitOfWork.EmployeeRespository.GetAll(query =>
-                    query.Select(e=> new Employee
+            var employeeDetailsList = _unitOfWork.EmployeeRespository.GetAllPaged(query =>
                     {
-                        FirstName = e.FirstName, 
-                        LastName = e.LastName,
-                        Department = e.Department,
-                        DepartmentId = e.DepartmentId,
-                        DesignationId = e.DesignationId,
-                        Designation = e.Designation
-                    })
-            );
+                        query = query.Select(e => new Employee
+                        {
+                            FirstName = e.FirstName,
+                            LastName = e.LastName,
+                            Department = e.Department,
+                            DepartmentId = e.DepartmentId,
+                            DesignationId = e.DesignationId,
+                            Designation = e.Designation
+                        });
+                        query = query.OrderBy(x => x.FirstName);
 
+                        return query;
+                    }, 0, 1);
+            
             var dto = employeeDetailsList.Select(x => new EmployeeListResponse
             {
                 Name = x.FirstName + x.LastName,
@@ -103,7 +107,18 @@ namespace UnitOfWork.Services.Services
                 Designation = $"[{x.DesignationId}] {x.Designation.Name}"
             });
 
-            return dto;
+            BasePagedInfoResponse basePagedList = new BasePagedInfoResponse
+            {
+                PageIndex = employeeDetailsList.PageIndex,
+                PageSize = employeeDetailsList.PageSize,
+                TotalCount = employeeDetailsList.TotalCount,
+                TotalPages = employeeDetailsList.TotalPages,
+                HasPreviousPage = employeeDetailsList.HasPreviousPage,
+                HasNextPage = employeeDetailsList.HasNextPage
+            };
+
+
+            return dto.GetDataTableResponse(basePagedList);
         }
 
         public async Task<Employee> GetEmployeeById(int employeeId)

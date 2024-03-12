@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using UnitOfWork.Core.Models;
 
 namespace UnitOfWork.Core.Interfaces
 {
@@ -15,7 +16,13 @@ namespace UnitOfWork.Core.Interfaces
         Task<IList<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>>? func = null, bool trackChanges = false);
 
         IList<TEntity> GetAll(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null, bool trackChanges = false);
-     
+
+        IPagedList<TEntity> GetAllPaged(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false, bool trackChanges = false);
+
+        Task<IPagedList<TEntity>> GetAllPagedAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>>? func = null,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false, bool trackChanges = false);
+
         IQueryable<TEntity> FindAll(bool trackChanges = false);
 
         Task<IList<TModel>> RawSqlQueryAsync<TModel>(string sqlQuery, params object[] parameters);

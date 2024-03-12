@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using UnitOfWork.Core.Extension;
 using UnitOfWork.Core.Interfaces;
+using UnitOfWork.Core.Models;
 using UnitOfWork.Infrastructure.Data;
 
 namespace UnitOfWork.Infrastructure.Repositories
@@ -75,6 +78,36 @@ namespace UnitOfWork.Infrastructure.Repositories
             query = func != null ? func(query) : query;
 
             return query.ToList();
+        }
+
+        public IPagedList<TEntity> GetAllPaged(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false, bool trackChanges = false)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (!trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
+            query = func != null ? func(query) : query;
+
+            return query.ToPagedList(pageIndex, pageSize, getOnlyTotalCount);
+        }
+
+        public async Task<IPagedList<TEntity>> GetAllPagedAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>>? func = null,
+            int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false, bool trackChanges = false)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (!trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
+            query = func != null ? await func(query) : query;
+
+            return query.ToPagedList(pageIndex, pageSize, getOnlyTotalCount);
         }
 
         public IQueryable<TEntity> FindAll(bool trackChanges = false)

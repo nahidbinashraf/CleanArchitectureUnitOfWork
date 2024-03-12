@@ -1,4 +1,5 @@
-﻿using UnitOfWork.Core.Models.Entities;
+﻿using UnitOfWork.Core.Models;
+using UnitOfWork.Core.Models.Entities;
 using UnitOfWork.Services.Models.Response;
 
 namespace UnitOfWork.Services.Interfaces
@@ -7,7 +8,7 @@ namespace UnitOfWork.Services.Interfaces
     {
         Task<bool> CreateEmployee(Employee employee);
 
-        Task<IEnumerable<EmployeeListResponse>> GetAllEmployees();
+        Task<DataTableResponse<EmployeeListResponse>> GetAllEmployees();
 
         Task<Employee> GetEmployeeById(int employeeId);
 
