@@ -21,23 +21,6 @@ namespace UnitOfWork.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<TEntity?> GetByIdAsync(long id)
-        {
-            return await _context.Set<TEntity>().FindAsync(id);
-        }
-
-        public TEntity? GetById(long id)
-        {
-            return _context.Set<TEntity>().Find(id);
-        }
-
-        public async Task<IList<TEntity>> GetByIdsAsync(IList<long> ids)
-        {
-            return await _context.Set<TEntity>()
-                .Where(entity => ids.Contains((long)_context.Entry(entity).Property("Id").CurrentValue!))
-                .ToListAsync();
-        }
-
         public async Task<IList<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null, bool trackChanges = false)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
@@ -118,6 +101,20 @@ namespace UnitOfWork.Infrastructure.Repositories
             {
                 query = query.AsNoTracking();
             }
+
+            return query;
+        }
+
+        public IQueryable<TEntity> FindByCondition(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null, bool trackChanges = false)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (!trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
+            query = func != null ? func(query) : query;
 
             return query;
         }

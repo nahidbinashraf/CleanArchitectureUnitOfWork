@@ -5,12 +5,6 @@ namespace UnitOfWork.Core.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : class 
     {
-        Task<TEntity?> GetByIdAsync(long id);
-
-        TEntity? GetById(long id);
-
-        Task<IList<TEntity>> GetByIdsAsync(IList<long> ids);
-
         Task<IList<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null, bool trackChanges = false);
 
         Task<IList<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, Task<IQueryable<TEntity>>>? func = null, bool trackChanges = false);
@@ -24,6 +18,8 @@ namespace UnitOfWork.Core.Interfaces
             int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false, bool trackChanges = false);
 
         IQueryable<TEntity> FindAll(bool trackChanges = false);
+
+        IQueryable<TEntity> FindByCondition(Func<IQueryable<TEntity>, IQueryable<TEntity>>? func = null, bool trackChanges = false);
 
         Task<IList<TModel>> RawSqlQueryAsync<TModel>(string sqlQuery, params object[] parameters);
 

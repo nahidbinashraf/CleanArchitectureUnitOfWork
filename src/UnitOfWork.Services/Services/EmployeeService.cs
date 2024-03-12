@@ -67,7 +67,13 @@ namespace UnitOfWork.Services.Services
         {
             if (employeeId > 0)
             {
-                var employeeDetails = _unitOfWork.EmployeeRespository.GetById(employeeId);
+                var employeeDetails = _unitOfWork.EmployeeRespository.FindByCondition(query =>
+                {
+                    query = query.Where(x => x.Id == employeeId);
+
+                    return query;
+                }).FirstOrDefault();
+
                 if (employeeDetails != null)
                 {
                     _unitOfWork.EmployeeRespository.Delete(employeeDetails);
@@ -125,10 +131,16 @@ namespace UnitOfWork.Services.Services
         {
             if (employeeId > 0)
             {
-                var EmployeeDetails = _unitOfWork.EmployeeRespository.GetAll().FirstOrDefault();
-                if (EmployeeDetails != null)
+                var employee = _unitOfWork.EmployeeRespository.FindByCondition(query =>
                 {
-                    return EmployeeDetails;
+                    query = query.Where(x => x.Id == employeeId);
+
+                    return query;
+                }).FirstOrDefault();
+
+                if (employee != null)
+                {
+                    return employee;
                 }
             }
             return null;
@@ -138,7 +150,12 @@ namespace UnitOfWork.Services.Services
         {
             if (employeeDetails != null)
             {
-                var employee = _unitOfWork.EmployeeRespository.GetById(employeeDetails.Id);
+                var employee = _unitOfWork.EmployeeRespository.FindByCondition(query =>
+                {
+                    query = query.Where(x => x.Id == employeeDetails.Id);
+
+                    return query;
+                }).FirstOrDefault();
                 if (employee != null)
                 {
                     employee.FirstName = employeeDetails.FirstName;
